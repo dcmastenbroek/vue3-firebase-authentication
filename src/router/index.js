@@ -26,11 +26,13 @@ const router = createRouter({
       path: "/register",
       name: "register",
       component: () => import("../views/RegisterView.vue"),
+      meta: { redirectIfAuthenticated: true },
     },
     {
       path: "/login",
       name: "login",
       component: () => import("../views/LoginView.vue"),
+      meta: { redirectIfAuthenticated: true },
     },
   ],
 });
@@ -40,7 +42,9 @@ router.beforeEach(async (to, from, next) => {
   const requireAuth = to.matched.some((route) => route.meta.requireAuth);
 
   if (requireAuth && !authStatus) {
-    next({ path: "/login" });
+    next({ name: "login" });
+  } else if (to.meta.redirectIfAuthenticated && authStatus) {
+    next({ name: "home" });
   } else {
     next();
   }
