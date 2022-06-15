@@ -1,41 +1,22 @@
-<script>
+<script setup>
 import { RouterLink, RouterView } from "vue-router";
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth } from "@/plugins/firebase";
 import { useAuthStore } from "@/stores/auth";
 
-export default {
-  name: "App",
+// Load the pinia store
+const store = useAuthStore();
 
-  components: {
-    RouterLink,
-    RouterView,
-  },
-
-  setup() {
-    const store = useAuthStore();
-
-    function logout() {
-      store.logout();
-    }
-
-    return { store, logout };
-  },
-
-  created() {
-    const store = useAuthStore();
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        store.user = user.uid;
-        store.isLoggedIn = true;
-      } else {
-        store.user = null;
-        store.isLoggedIn = false;
-      }
-    });
-  },
-};
+// Keep track of user changes
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    store.user = user;
+    store.isLoggedIn = true;
+  } else {
+    store.user = null;
+    store.isLoggedIn = false;
+  }
+});
 </script>
 
 <template>
@@ -50,13 +31,19 @@ export default {
           <router-link v-if="!store.isLoggedIn" to="/register"
             >Register</router-link
           >
-          <a v-if="store.isLoggedIn" href="#" @click.prevent="logout">Logout</a>
+          <a v-if="store.isLoggedIn" href="#" @click.prevent="store.logout"
+            >Logout</a
+          >
         </nav>
       </div>
     </header>
 
     <main class="container px-4">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component"></component>
+        </transition>
+      </router-view>
     </main>
   </div>
 </template>
