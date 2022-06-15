@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 var firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,6 +21,9 @@ const auth = getAuth(app);
 // Firestore
 const db = getFirestore(app);
 
+// Cloud storage
+const storage = getStorage(app);
+
 // Get the currently logged-in user
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
@@ -34,4 +38,4 @@ const getCurrentUser = () => {
   });
 };
 
-export { auth, db, getCurrentUser };
+export { auth, db, storage, getCurrentUser };
