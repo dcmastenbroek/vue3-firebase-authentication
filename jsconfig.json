@@ -1,3 +1,26 @@
 {
-  "include": ["./src/**/*"]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": false,
+    "baseUrl": ".",
+    "paths": {
+      "/@/*": ["src/*"]
+    },
+    "lib": ["ESNext", "DOM", "WebWorker"]
+  },
+  "include": ["src/**/*.js", "src/**/*.vue"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "public",
+    "test",
+    "tests",
+    "test.ts",
+    "**/*.spec.ts",
+    "**/*.worker.ts"
+  ]
 }
