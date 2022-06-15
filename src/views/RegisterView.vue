@@ -2,6 +2,8 @@
   <div>
     <h1 class="text-xl font-bold mb-4">Create an Account</h1>
 
+    <div v-if="showAlert" class="mb-4 text-red-600">{{ alertMessage }}</div>
+
     <vee-form
       @submit="onRegister"
       :validation-schema="schema"
@@ -37,7 +39,7 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import {
   Field as VeeField,
   Form as VeeForm,
@@ -63,16 +65,28 @@ export default defineComponent({
       password_confirm: "confirmed:@password",
     };
 
-    function onRegister(values) {
+    let showAlert = ref(false);
+    let alertMessage = ref("");
+
+    function onRegister(values, { resetForm }) {
       const data = {
         email: values.email,
         password: values.password,
       };
 
-      store.register(data);
+      store
+        .register(data)
+        .then(() => {
+          showAlert.value = false;
+          resetForm();
+        })
+        .catch((error) => {
+          alertMessage.value = error;
+          showAlert.value = true;
+        });
     }
 
-    return { schema, onRegister };
+    return { schema, showAlert, alertMessage, onRegister };
   },
 });
 </script>
