@@ -15,34 +15,49 @@ export const useAuthStore = defineStore({
   }),
 
   getters: {
-    getUser: (state) => state.user,
+    getCurrentUser: () => auth.currentUser,
   },
 
   actions: {
     register(data) {
-      createUserWithEmailAndPassword(auth, data.email, data.password)
-        .then(() => {
-          this.router.push("/");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      return new Promise((resolve, reject) => {
+        createUserWithEmailAndPassword(auth, data.email, data.password)
+          .then(async (userCredentials) => {
+            this.user = userCredentials.user;
+            this.router.push("/");
+            resolve(userCredentials);
+          })
+          .catch((error) => {
+            console.log("An error happened.", error);
+            reject(error);
+          });
+      });
     },
 
     login(data) {
-      signInWithEmailAndPassword(auth, data.email, data.password)
-        .then(() => {
-          this.router.push("/");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      return signInWithEmailAndPassword(auth, data.email, data.password);
     },
 
     logout() {
-      signOut(auth).then(() => {
-        this.router.push("/login");
-      });
+      signOut(auth)
+        .then(() => {
+          this.router.push("/login");
+        })
+        .catch((error) => {
+          console.log("An error happened.", error);
+        });
+    },
+
+    initializeAuthentication() {
+      const user = this.getCurrentUser;
+
+      if (user) {
+        this.user = user;
+        this.isLoggedIn = true;
+      } else {
+        this.user = null;
+        this.isLoggedIn = false;
+      }
     },
   },
 });
